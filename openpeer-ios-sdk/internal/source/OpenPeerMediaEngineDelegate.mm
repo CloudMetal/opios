@@ -42,7 +42,7 @@ boost::shared_ptr<OpenPeerMediaEngineDelegate> OpenPeerMediaEngineDelegate::crea
   return boost::shared_ptr<OpenPeerMediaEngineDelegate> (new OpenPeerMediaEngineDelegate(inMediaEngineDelegate));
 }
 
-void OpenPeerMediaEngineDelegate::onMediaEngineAudioRouteChanged(IMediaEngine::OutputAudioRoutes audioRoute)
+void OpenPeerMediaEngineDelegate::onMediaEngineAudioRouteChanged(IMediaEngineObsolete::OutputAudioRoutes audioRoute)
 {
     /*HOPMediaEngineOutputAudioRoutes audioRouteType;
     switch (audioRoute)

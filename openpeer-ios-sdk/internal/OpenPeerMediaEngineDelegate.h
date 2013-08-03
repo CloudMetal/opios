@@ -32,13 +32,13 @@
 
 #import <Foundation/Foundation.h>
 #include <openpeer/core/types.h>
-#include <openpeer/core/IMediaEngine.h>
+#include <openpeer/core/IMediaEngineObsolete.h>
 #import "HOPProtocols.h"
 
 using namespace openpeer;
 using namespace openpeer::core;
 
-class OpenPeerMediaEngineDelegate : public IMediaEngineDelegate
+class OpenPeerMediaEngineDelegate : public IMediaEngineDelegateObsolete
 {
 protected:
     id<HOPMediaEngineDelegate> mediaEngineDelegate;
@@ -47,7 +47,7 @@ protected:
 public:
   static boost::shared_ptr<OpenPeerMediaEngineDelegate> create(id<HOPMediaEngineDelegate> inMediaEngineDelegate);
   
-  virtual void onMediaEngineAudioRouteChanged(IMediaEngine::OutputAudioRoutes audioRoute);
+  virtual void onMediaEngineAudioRouteChanged(IMediaEngineObsolete::OutputAudioRoutes audioRoute);
   virtual void onMediaEngineFaceDetected();
   virtual void onMediaEngineVideoCaptureRecordStopped();
 };

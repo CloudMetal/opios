@@ -38,8 +38,8 @@ using namespace openpeer::core;
 
 @interface HOPMediaEngine ()
 {
-    IMediaEnginePtr mediaEnginePtr;
+    IMediaEngineObsoletePtr mediaEnginePtr;
 }
 
-- (IMediaEnginePtr) getMediaEnginePtr;
+- (IMediaEngineObsoletePtr) getMediaEnginePtr;
 @end

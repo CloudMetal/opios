@@ -32,7 +32,7 @@
 
 #import "HOPMediaEngine_Internal.h"
 #import "HOPMediaEngine.h"
-#import <openpeer/core/IMediaEngine.h>
+#import <openpeer/core/IMediaEngineObsolete.h>
 
 using namespace openpeer::core;
 
@@ -43,13 +43,13 @@ using namespace openpeer::core;
 
 + (NSString*) cameraTypeToString: (HOPMediaEngineCameraTypes) type
 {
-  return [NSString stringWithUTF8String: IMediaEngine::toString((IMediaEngine::CameraTypes) type)];
+  return [NSString stringWithUTF8String: IMediaEngineObsolete::toString((IMediaEngineObsolete::CameraTypes) type)];
 }
 
 
 + (NSString*) audioRouteToString: (HOPMediaEngineOutputAudioRoutes) route
 {
-  return [NSString stringWithUTF8String: IMediaEngine::toString((IMediaEngine::OutputAudioRoutes) route)];
+  return [NSString stringWithUTF8String: IMediaEngineObsolete::toString((IMediaEngineObsolete::OutputAudioRoutes) route)];
 }
 
 + (id)sharedInstance
@@ -67,7 +67,7 @@ using namespace openpeer::core;
     self = [super init];
     if (self)
     {
-        mediaEnginePtr = IMediaEngine::singleton();
+        mediaEnginePtr = IMediaEngineObsolete::singleton();
     }
     return self;
 }
@@ -86,7 +86,7 @@ using namespace openpeer::core;
 {
     if(mediaEnginePtr)
     {
-        mediaEnginePtr->setDefaultVideoOrientation((IMediaEngine::VideoOrientations)orientation);
+        mediaEnginePtr->setDefaultVideoOrientation((IMediaEngineObsolete::VideoOrientations)orientation);
     }
     else
     {
@@ -111,7 +111,7 @@ using namespace openpeer::core;
 {
     if(mediaEnginePtr)
     {
-        mediaEnginePtr->setRecordVideoOrientation((IMediaEngine::VideoOrientations)orientation);
+        mediaEnginePtr->setRecordVideoOrientation((IMediaEngineObsolete::VideoOrientations)orientation);
     }
     else
     {
@@ -311,7 +311,7 @@ using namespace openpeer::core;
 {
     if(mediaEnginePtr)
     {
-        mediaEnginePtr->setCameraType((IMediaEngine::CameraTypes)type);
+        mediaEnginePtr->setCameraType((IMediaEngineObsolete::CameraTypes)type);
     }
     else
     {
@@ -321,7 +321,7 @@ using namespace openpeer::core;
 
 - (int) getVideoTransportStatistics: (HOPMediaEngineRtpRtcpStatistics*) stat
 {
-    IMediaEngine::RtpRtcpStatistics coreStat;
+    IMediaEngineObsolete::RtpRtcpStatistics coreStat;
     int ret = 0;
 
     if(mediaEnginePtr)
@@ -347,7 +347,7 @@ using namespace openpeer::core;
 
 - (int) getVoiceTransportStatistics: (HOPMediaEngineRtpRtcpStatistics*) stat
 {
-    IMediaEngine::RtpRtcpStatistics coreStat;
+    IMediaEngineObsolete::RtpRtcpStatistics coreStat;
     int ret = 0;
 
     if(mediaEnginePtr)
@@ -484,7 +484,7 @@ using namespace openpeer::core;
 }
 
 #pragma mark - Internal methods
-- (IMediaEnginePtr) getMediaEnginePtr
+- (IMediaEngineObsoletePtr) getMediaEnginePtr
 {
     return mediaEnginePtr;
 }
