@@ -32,8 +32,8 @@
 #import <Foundation/Foundation.h>
 #import <OpenpeerSDK/HOPProtocols.h>
 
-@class Contact;
 @class HOPIdentityLookup;
+@class HOPRolodexContact;
 
 @interface ContactsManager : NSObject<UIWebViewDelegate>
 
@@ -47,11 +47,6 @@
 
 - (void) loadContacts;
 - (void) identityLookupForContacts:(NSArray *)contacts identityServiceDomain:(NSString*) identityServiceDomain;
-
-- (Contact*) getContactForPeerURI:(NSString*) uniqueID;
-
-- (void) checkAvailability;
-- (void) onCheckAvailabilityResponseReceivedForContact:(Contact*) contact withListOfPeerURIs:(NSString*) peerURIs;
 
 - (void) updateContactsWithDataFromLookup:(HOPIdentityLookup*) identityLookup;
 @end

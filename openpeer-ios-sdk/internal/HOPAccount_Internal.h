@@ -53,7 +53,7 @@ using namespace openpeer::core;
 
 @property (nonatomic, strong) NSMutableDictionary* dictionaryOfIdentities;
 
-- (id) init;
+- (id) initSingleton;
 - (void) setLocalDelegates:(id<HOPAccountDelegate>) inAccountDelegate conversationThread:(id<HOPConversationThreadDelegate>) inConversationThread callDelegate:(id<HOPCallDelegate>) inCallDelegate;
 
 - (IAccountPtr) getAccountPtr;

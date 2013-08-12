@@ -29,23 +29,8 @@
  
  */
 
-#import <Foundation/Foundation.h>
-#import <CoreData/CoreData.h>
+#import "OpenPeerConstants.h"
 
-@class HOPIdentityContact;
-
-@interface HOPPublicPeerFile : NSManagedObject
-
-@property (nonatomic, retain) NSString * peerFile;
-@property (nonatomic, retain) NSString * peerURI;
-@property (nonatomic, retain) NSSet *identityContacts;
-@end
-
-@interface HOPPublicPeerFile (CoreDataGeneratedAccessors)
-
-- (void)addIdentityContactsObject:(HOPIdentityContact *)value;
-- (void)removeIdentityContactsObject:(HOPIdentityContact *)value;
-- (void)addIdentityContacts:(NSSet *)values;
-- (void)removeIdentityContacts:(NSSet *)values;
-
-@end
+NSString* const databaseDirectory = @"Database";
+NSString* const databaseName = @"OpenPeer.sqlite";
+NSString* const modelName = @"OpenPeer";

@@ -29,7 +29,6 @@
  
  */
 
-#import "Contact.h"
 #import <OpenpeerSDK/HOPTypes.h>
 #import <OpenpeerSDK/HOPIdentity.h>
 #import <OpenpeerSDK/HOPContact.h>

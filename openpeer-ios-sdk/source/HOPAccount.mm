@@ -53,7 +53,7 @@ using namespace openpeer::core;
     static dispatch_once_t pred = 0;
     __strong static id _sharedObject = nil;
     dispatch_once(&pred, ^{
-        _sharedObject = [[self alloc] init]; // or some other init method
+        _sharedObject = [[self alloc] initSingleton]; // or some other init method
     });
     return _sharedObject;
 }
@@ -67,7 +67,7 @@ using namespace openpeer::core;
     return [NSString stringWithUTF8String: IAccount::toString((IAccount::AccountStates) state)];
 }
 
-- (id)init
+- (id)initSingleton
 {
     self = [super init];
     if (self)
@@ -82,16 +82,21 @@ using namespace openpeer::core;
 {
     BOOL passedWithoutErrors = NO;
     
+    //Check if valid arguments are passed
     if (!inAccountDelegate || !inConversationThreadDelegate || !inCallDelegate || [namespaceGrantOuterFrameURLUponReload length] == 0 || [grantID length] == 0  || [lockboxServiceDomain length] == 0 )
         return passedWithoutErrors;
     
+    //If core account object already exists, shut it down
     if (accountPtr)
         accountPtr->shutdown();
     
+    //Set account, conversation thread and call delegates
     [self setLocalDelegates:inAccountDelegate conversationThread:inConversationThreadDelegate callDelegate:inCallDelegate];
     
+    //Start login. This static method will create an account core object
     accountPtr = IAccount::login(openpeerAccountDelegatePtr, openpeerConversationDelegatePtr, openpeerCallDelegatePtr, [namespaceGrantOuterFrameURLUponReload UTF8String], [grantID UTF8String], [lockboxServiceDomain UTF8String], forceCreateNewLockboxAccount);
     
+    //If core account object is created return that login process is started successfully
     if (accountPtr)
         passedWithoutErrors = YES;
     
@@ -103,13 +108,17 @@ using namespace openpeer::core;
 {
     BOOL passedWithoutErrors = NO;
     
+    //Check if valid arguments are passed
     if (!inAccountDelegate || !inConversationThreadDelegate || !inCallDelegate || [lockboxOuterFrameURLUponReload length] == 0 || [reloginInformation length] == 0)
         return passedWithoutErrors;
     
+    //Set account, conversation thread and call delegates
     [self setLocalDelegates:inAccountDelegate conversationThread:inConversationThreadDelegate callDelegate:inCallDelegate];
     
+    //Start relogin. This static method will create an account core object
     accountPtr = IAccount::relogin(openpeerAccountDelegatePtr, openpeerConversationDelegatePtr, openpeerCallDelegatePtr, [lockboxOuterFrameURLUponReload UTF8String],IHelper::createElement([reloginInformation UTF8String]));
     
+    //If core account object is created return that relogin process is started successfully
     if (accountPtr)
         passedWithoutErrors = YES;
     
@@ -137,20 +146,25 @@ using namespace openpeer::core;
     return ret;
 }
 
-//- (NSString*) getUserID
-//{
-//    NSString* ret = nil;
-//    
-//    if(accountPtr)
-//    {
-//        ret = [NSString stringWithUTF8String: accountPtr->getUserID()];
-//    }
-//    else
-//    {
-//        [NSException raise:NSInvalidArgumentException format:@"Invalid account object!"];
-//    }
-//    return ret;
-//}
+- (NSString*) getStableID
+{
+    NSString* ret = nil;
+    
+    if(accountPtr)
+    {
+        String stableId = accountPtr->getStableID();
+        
+        if (stableId && stableId.length() > 0)
+        {
+            ret = [NSString stringWithUTF8String: stableId];
+        }
+    }
+    else
+    {
+        [NSException raise:NSInvalidArgumentException format:@"Invalid account object!"];
+    }
+    return ret;
+}
 
 - (NSString*) getReloginInformation
 {
@@ -231,8 +245,6 @@ using namespace openpeer::core;
             byte* secureInBytes = secure->BytePtr();
             int sizeInBytes = secure->SizeInBytes();
             ret = [NSData dataWithBytes:secureInBytes length:sizeInBytes];
-            //SecureByteBlock secureByteBlock = secure.;
-            //ret = [NSString stringWithUTF8String: IHelper::convertToString(secureByteBlock)];
         }
     }
     else

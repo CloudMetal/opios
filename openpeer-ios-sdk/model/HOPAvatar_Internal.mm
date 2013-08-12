@@ -33,6 +33,13 @@
 
 @implementation HOPAvatar
 
+@dynamic rolodexContacts;
+
+@dynamic height;
+@dynamic name;
+@dynamic url;
+@dynamic width;
+
 - (void) updateWithAvatar:(RolodexContact::Avatar) inAvatar
 {
     self.name = [NSString stringWithCString:inAvatar.mName encoding:NSUTF8StringEncoding];

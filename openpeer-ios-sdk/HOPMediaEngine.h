@@ -128,18 +128,6 @@
 - (NSString*) getVoiceRecordFile;
 
 /**
- Sets recording file name.
- @param fileName NSString Recording file name
- */
-- (void) setRecordFile: (NSString*) fileName;
-
-/**
- Retrieves recording file name.
- @return Retrieves recording file name
- */
-- (NSString*) getRecordFile;
-
-/**
  Turns mute ON/OFF.
  @param enabled BOOL Enabled flag
  */

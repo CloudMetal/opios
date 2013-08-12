@@ -42,30 +42,17 @@
 
 - (void) onConversationThreadNew:(HOPConversationThread*) conversationThread
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_main_queue(), ^
+    {
         if (conversationThread)
         {
-            //TODO: Link HOPRolodexContact and HOPContact by using OPenPeerStorageManageer - peerURI to be key and hopcontact value
-            NSMutableArray* contacts = [[NSMutableArray alloc] init];
             NSArray* participants = [conversationThread getContacts];
-            for (HOPContact* hopContact in participants)
-            {
-                if (![hopContact isSelf])
-                {
-                    //Here you can parse element to identifier contact who initiated communication. This is necessary in case contact is in the list, but it is not marked as openpeer user.
-                    Contact* contact = [[ContactsManager sharedContactsManager] getContactForPeerURI:[hopContact getPeerURI]];
-                    
-                    if (contact)
-                      [contacts addObject:contact];
-                    
-                }
-            }
             
-            if ([contacts count] > 0)
+            if ([participants count] > 0)
             {
-                if (![[SessionManager sharedSessionManager] proceedWithExistingSessionForContact:[contacts objectAtIndex:0] newConversationThread:conversationThread])
+                if (![[SessionManager sharedSessionManager] proceedWithExistingSessionForContact:[participants objectAtIndex:0] newConversationThread:conversationThread])
                 {
-                    [[SessionManager sharedSessionManager] createSessionForContacts:contacts andConversationThread:conversationThread];
+                    [[SessionManager sharedSessionManager] createSessionForContacts:participants andConversationThread:conversationThread];
                 }
             }
         }

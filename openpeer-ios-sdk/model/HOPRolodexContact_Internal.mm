@@ -40,8 +40,16 @@
 
 @implementation HOPRolodexContact
 
+@dynamic identityURI;
+@dynamic name;
+@dynamic profileURL;
+@dynamic vProfileURL;
+@dynamic avatars;
+@dynamic identityContact;
+@dynamic identityProvider;
 
-- (void) updateWithRolodexContact:(RolodexContact) inRolodexContact identityProviderDomain:(NSString*)identityProviderDomain homeUserIdentityURI:(NSString*)homeUserIdentityURI
+
+- (void) updateWithCoreRolodexContact:(RolodexContact) inRolodexContact identityProviderDomain:(NSString*)identityProviderDomain homeUserIdentityURI:(NSString*)homeUserIdentityURI
 {
     NSString* identityName = [NSString stringWithCString:inRolodexContact.mIdentityProvider encoding:NSUTF8StringEncoding];
     HOPIdentityProvider* iProvider = [[HOPModelManager sharedModelManager] getIdentityProviderByDomain:identityProviderDomain identityName:identityName homeUserIdentityURI:homeUserIdentityURI];
@@ -65,27 +73,21 @@
         self.avatars = [[NSSet alloc] init];
         for (RolodexContact::AvatarList::iterator avatar = inRolodexContact.mAvatars.begin(); avatar != inRolodexContact.mAvatars.end(); ++avatar)
         {
-            HOPAvatar* hopAvatar = nil;
-            //TODO: Get avatar from the database
+            NSString* avatarURL = [NSString stringWithUTF8String:avatar->mURL];
             
-            if (!hopAvatar)
+            if ([avatarURL length] > 0)
             {
-                //hopAvatar = [NSEntityDescription insertNewObjectForEntityForName:@"HOPAvatar" inManagedObjectContext:context];
+                HOPAvatar* hopAvatar = [[HOPModelManager sharedModelManager] getAvatarByURL:avatarURL];
+                
+                if (!hopAvatar)
+                {
+                    hopAvatar = [NSEntityDescription insertNewObjectForEntityForName:@"HOPAvatar" inManagedObjectContext:[[HOPModelManager sharedModelManager]managedObjectContext]];
+                }
+                
+                [hopAvatar updateWithAvatar:*avatar];
             }
-            
-            [hopAvatar updateWithAvatar:*avatar];
         }
     }
-}
-
-- (HOPContact*) getCoreContact
-{
-    HOPContact* ret = [[OpenPeerStorageManager sharedStorageManager] getContactForPeerURI:self.identityContact.peerFile.peerURI];
-    if (!ret)
-    {
-        ret = [[HOPContact alloc] initWithPeerFile:self.identityContact.peerFile.peerFile];
-    }
-    return ret;
 }
 
 @end

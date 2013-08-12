@@ -32,7 +32,6 @@
 #import "CallDelegate.h"
 #import "OpenPeer.h"
 #import <OpenpeerSDK/HOPCall.h>
-#import <OpenpeerSDK/HOPContact.h>
 #import <OpenpeerSDK/HOPTypes.h>
 #import <OpenpeerSDK/HOPConversationThread.h>
 #import "SessionManager.h"

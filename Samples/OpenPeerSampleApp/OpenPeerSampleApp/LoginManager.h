@@ -57,6 +57,6 @@
 
 - (void) onUserLoggedIn;
 
-- (void) notifyClient:(NSString*) message;
+//- (void) notifyClient:(NSString*) message;
 - (BOOL) isAssociatedIdentity:(NSString*) inBaseIdentityURI;
 @end

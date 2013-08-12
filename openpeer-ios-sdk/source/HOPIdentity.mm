@@ -40,6 +40,7 @@
 #import "OpenPeerIdentityDelegate.h"
 #import "OpenPeerUtility.h"
 #import "HOPRolodexContact_Internal.h"
+#import "HOPIdentityContact_Internal.h"
 
 @implementation HOPIdentityState
 
@@ -187,6 +188,35 @@
     if(identityPtr)
     {
         ret = [NSString stringWithCString:identityPtr->getIdentityProviderDomain() encoding:NSUTF8StringEncoding];
+    }
+    else
+    {
+        [NSException raise:NSInvalidArgumentException format:@"Invalid core identity object!"];
+    }
+    return ret;
+}
+
+- (HOPIdentityContact*) getIdentityContact
+{
+    HOPIdentityContact* ret = nil;
+    
+    if(identityPtr)
+    {
+        IdentityContact identityContact;
+        identityPtr->getIdentityContact(identityContact);
+        
+        NSString* sId = [NSString stringWithUTF8String:identityContact.mStableID];
+        NSString* identityURI = [NSString stringWithUTF8String:identityContact.mIdentityURI];
+        ret = [[HOPModelManager sharedModelManager] getIdentityContactByStableID:sId identityURI:identityURI];
+        if (!ret)
+        {
+            NSManagedObject* managedObject = [[HOPModelManager sharedModelManager] createObjectForEntity:@"HOPIdentityContact"];
+            if (managedObject && [managedObject isKindOfClass:[HOPIdentityContact class]])
+            {
+                ret = (HOPIdentityContact*) managedObject;
+                [ret updateWithIdentityContact:identityContact];
+            }
+        }
     }
     else
     {
@@ -349,7 +379,7 @@
                         if (hopRolodexContact)
                         {
                             //Update existing rolodex contact
-                            [hopRolodexContact updateWithRolodexContact:rolodexContact identityProviderDomain:[self getIdentityProviderDomain] homeUserIdentityURI:[self getIdentityURI]];
+                            [hopRolodexContact updateWithCoreRolodexContact:rolodexContact identityProviderDomain:[self getIdentityProviderDomain] homeUserIdentityURI:[self getIdentityURI]];
                             [[HOPModelManager sharedModelManager] saveContext];
                         }
                         else
@@ -359,7 +389,7 @@
                             if ([managedObject isKindOfClass:[HOPRolodexContact class]])
                             {
                                 hopRolodexContact = (HOPRolodexContact*)managedObject;
-                                [hopRolodexContact updateWithRolodexContact:rolodexContact identityProviderDomain:[self getIdentityProviderDomain] homeUserIdentityURI:[self getIdentityURI]];
+                                [hopRolodexContact updateWithCoreRolodexContact:rolodexContact identityProviderDomain:[self getIdentityProviderDomain] homeUserIdentityURI:[self getIdentityURI]];
                                 [[HOPModelManager sharedModelManager] saveContext];
                             }
                         }

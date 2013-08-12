@@ -34,6 +34,8 @@
 #import "HOPTypes.h"
 #import "HOPProtocols.h"
 
+@class HOPIdentityContact;
+
 /**
  Wrapper for identity state data.
  */
@@ -67,7 +69,7 @@
  @return HOPIdentity object if IIdentityPtr object is created sucessfully, otherwise nil
  */
 + (id) loginWithDelegate:(id<HOPIdentityDelegate>) inIdentityDelegate identityProviderDomain:(NSString*) identityProviderDomain  identityURIOridentityBaseURI:(NSString*) identityURIOridentityBaseURI outerFrameURLUponReload:(NSString*) outerFrameURLUponReload;
-
+- (id) init __attribute__((unavailable("Use one of loginWithDelegate: static methods to create an identity object.")));
 /**
  Creates identity object and starts identity login for preauthorized identites. This method is called only on login procedure. During relogin procedure this method is not invoked.
  @param inIdentityDelegate HOPIdentityDelegate delegate
@@ -123,6 +125,9 @@
  @returns NSString identity provider domain
  */
 - (NSString*) getIdentityProviderDomain;
+
+
+- (HOPIdentityContact*) getIdentityContact;
 
 /**
  Retrieves identity inner browser frame URL

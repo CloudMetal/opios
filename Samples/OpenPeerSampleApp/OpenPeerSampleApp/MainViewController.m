@@ -35,7 +35,6 @@
 #import "Constants.h"
 //SDK
 #import <OpenpeerSDK/HOPConversationThread.h>
-#import <OpenpeerSDK/HOPContact.h>
 //Managers
 #import "SessionManager.h"
 #import "LoginManager.h"
@@ -43,7 +42,6 @@
 #import "MessageManager.h"
 //Model
 #import "Session.h"
-#import "Contact.h"
 //View controllers
 #import "LoginViewController.h"
 #import "WebLoginViewController.h"
@@ -108,13 +106,13 @@
                                                        delegate:self
                                               cancelButtonTitle:@"Cancel"
                                          destructiveButtonTitle:nil
-                                              otherButtonTitles:remoteSessionTitle, @"Check availability", faceDectionTitle, redialTitle, loggedUserInfo, nil];
+                                              otherButtonTitles:remoteSessionTitle, faceDectionTitle, redialTitle, loggedUserInfo, nil];
     else
         sheet = [[UIActionSheet alloc] initWithTitle:@"Demo options"
                                             delegate:self
                                    cancelButtonTitle:@"Cancel"
                               destructiveButtonTitle:nil
-                                   otherButtonTitles:remoteSessionTitle, @"Check availability", faceDectionTitle, redialTitle, nil];
+                                   otherButtonTitles:remoteSessionTitle, faceDectionTitle, redialTitle, nil];
     
     [sheet setActionSheetStyle:UIActionSheetStyleAutomatic];
     
@@ -396,12 +394,7 @@
             [alertView show];
         }
             break;
-            
-        case DEMO_CHECK_AVAILABILITY:
-        {
-            [[ContactsManager sharedContactsManager] checkAvailability];
-        }
-            break;
+
             
         case DEMO_FACE_DETECTION_MODE:
         {

@@ -36,7 +36,6 @@
 #import "ActiveSessionViewController.h"
 
 #import "Utility.h"
-#import "Contact.h"
 #import "Session.h"
 #import "OpenPeerUser.h"
 #import "OpenPeer.h"
@@ -44,12 +43,14 @@
 
 #import <OpenpeerSDK/HOPConversationThread.h>
 #import <OpenpeerSDK/HOPContact.h>
-#import <OpenpeerSDK/HOPRolodexContact.h>
+#import <OpenpeerSDK/HOPRolodexContact+External.h>
 #import <OpenpeerSDK/HOPIdentityContact.h>
 #import <OpenpeerSDK/HOPPublicPeerFile.h>
 #import <OpenpeerSDK/HOPMessage.h>
 #import <OpenpeerSDK/HOPCall.h>
 #import <OpenpeerSDK/HOPMediaEngine.h>
+#import <OpenpeerSDK/HOPModelManager.h>
+#import <OpenpeerSDK/HOPContact.h>
 
 @interface SessionManager()
 
@@ -93,23 +94,28 @@
 
 /**
  Creates a session for the selected contacts
- @param contact Contact Contact for which session will be created.
+ @param contact HOPContact Contact for which session will be created.
 */
-- (Session*)createSessionForContact:(HOPRolodexContact *)contact
+- (Session*)createSessionForContact:(HOPContact *)contact
 {
-    Session* ret = [self getSessionForContact:contact];
+    Session* ret = nil;
     
-    if (!ret && contact.identityContact)
+    if (!contact)
+        return ret;
+    
+    ret = [self getSessionForContact:contact];
+    
+    if (!ret)
     {
-        NSLog(@"%@ is creating a session with %@", [[OpenPeerUser sharedOpenPeerUser] fullName],[contact name]);
+        //NSLog(@"%@ is creating a session with %@", [[OpenPeerUser sharedOpenPeerUser] fullName],[contact name]);
         
         //Create a conversation thread
-        HOPConversationThread* conversationThread = [HOPConversationThread conversationThreadWithProfileBundle:contact.identityContact.identityProofBundle];
+        HOPConversationThread* conversationThread = [HOPConversationThread conversationThreadWithProfileBundle:nil];
         //Create a session with new conversation thread
         ret = [[Session alloc] initWithContact:contact conversationThread:conversationThread];
         
         //Add list of all participants. Currently only one participant is added
-        if (ret && [contact.identityContact.peerFile.peerFile length] > 0)
+        if (ret)
         {
             NSArray* participants = [NSArray arrayWithObject:contact];
             [conversationThread addContacts:participants];
@@ -157,11 +163,11 @@
         NSString* peerURI = [strings objectAtIndex:0];
         if ([peerURI length] > 0)
         {
-            Contact* contact = [[ContactsManager sharedContactsManager] getContactForPeerURI:peerURI];
+            HOPRolodexContact* contact = [[[HOPModelManager sharedModelManager] getRolodexContactsByPeerURI:peerURI] objectAtIndex:0];
             if (contact)
             {
                 //Create a session for contact
-                session = [self createSessionForContact:contact];
+                session = [self createSessionForContact:[contact getCoreContact]];
                 if (session)
                 {
                     //If session is created sucessfully, start a video call
@@ -188,8 +194,8 @@
     if ([participants count] > 1)
     {
         //First contact is master and he will be remote session host
-        HOPRolodexContact* masterContact = [participants objectAtIndex:0];
-        HOPRolodexContact* slaveContact = [participants objectAtIndex:1];
+        HOPContact* masterContact = [participants objectAtIndex:0];
+        HOPContact* slaveContact = [participants objectAtIndex:1];
         
         //Create a session with the master contact, that will be used to send system message for creating a remote session
         sessionThatWillInitiateRemoteSession = [self createSessionForContact:masterContact];
@@ -204,10 +210,10 @@
 
 /**
  If exists it retrieves an old session for a contact for which new conversation thread is created. If the old session is found, old conversation thread object is replaced with a new one, session key in sessions dictionary is updated with a new conversation thread id.
- @param contact Contact participant of new conversation thread
+ @param contact HOPRolodexContact participant of new conversation thread
  @param inConversationThread HOPConversationThread new conversation thread
  */
-- (Session*) proceedWithExistingSessionForContact:(HOPRolodexContact*) contact newConversationThread:(HOPConversationThread*) inConversationThread
+- (Session*) proceedWithExistingSessionForContact:(HOPContact*) contact newConversationThread:(HOPConversationThread*) inConversationThread
 {
     Session* ret = [self getSessionForContact:contact];
     if (ret)
@@ -226,10 +232,10 @@
 }
 /**
  Get active session for contact.
- @param contacts Contact One of the participants.
+ @param contacts HOPRolodexContact One of the participants.
  @return session with participant
 */
-- (Session*) getSessionForContact:(HOPRolodexContact*) contact
+- (Session*) getSessionForContact:(HOPContact*) contact
 {
     for (Session* session in [self.sessionsDictionary allValues])
     {
@@ -257,7 +263,8 @@
     {
         NSLog(@"Make call for sesison - making call");
         //Currently we are not supporting group conferences, so only one participant is possible
-        HOPContact* contact = [[[inSession participantsArray] objectAtIndex:0] hopContact];
+        HOPContact* contact = [[inSession participantsArray] objectAtIndex:0];
+        
         //Place a audio or video call for chosen contact
         inSession.isRedial = isRedial;
         inSession.currentCall = [HOPCall placeCall:inSession.conversationThread toContact:contact includeAudio:YES includeVideo:includeVideo];
@@ -304,6 +311,7 @@
     
     ActiveSessionViewController* sessionViewController = [[[[OpenPeer sharedOpenPeer] mainViewController] sessionViewControllersDictionary] objectForKey:sessionId];
     
+    //TODO: Make HOPRolodex category for HOPContact
     //If it is an incomming call, get show session view controller
     if (![[call getCaller] isSelf])
     {
@@ -405,21 +413,6 @@
     return ret;
 }
 
-
-/**
- Handle availability check request. If there is a session with active call, create a system message with list of call participants.  @param inSession HOPMessage Session with contact whose availability is being checked
- */
-- (void) onAvailabilityCheckReceivedForSession:(Session*) inSession
-{
-    NSString* messageResponse = @"";
-    if (self.sessionWithActiveCall)
-    {
-        if ([self.sessionWithActiveCall.participantsArray count] > 0)
-            messageResponse = [[[self.sessionWithActiveCall.participantsArray objectAtIndex:0] hopContact] getPeerURI];
-    }
-    
-    [[MessageManager sharedMessageManager] sendSystemMessageToCheckAvailabilityResponseForSession:inSession message:messageResponse];
-}
 
 /**
  Redials for session.

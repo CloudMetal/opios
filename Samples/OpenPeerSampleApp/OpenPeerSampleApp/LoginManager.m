@@ -41,9 +41,11 @@
 //Managers
 #import "ContactsManager.h"
 //SDK
-#import "OpenPeerSDK/HOPAccount.h"
-#import "OpenPeerSDK/HOPIdentity.h"
-#import "OpenPeerSDK/HOPTypes.h"
+#import <OpenPeerSDK/HOPAccount.h>
+#import <OpenPeerSDK/HOPIdentity.h>
+#import <OpenPeerSDK/HOPTypes.h>
+#import <OpenpeerSDK/HOPHomeUser.h>
+#import <OpenpeerSDK/HOPModelManager.h>
 //Delegates
 #import "StackDelegate.h"
 //View Controllers
@@ -176,12 +178,17 @@
  */
 - (void) startRelogin
 {
+    BOOL reloginStarted = NO;
     NSLog(@"Relogin started");
     [[ActivityIndicatorViewController sharedActivityIndicator] showActivityIndicator:YES withText:@"Relogin ..." inView:[[[OpenPeer sharedOpenPeer] mainViewController] view]];
     
-    //TODO: Create a lockboxReloginInfo
-    //To start relogin procedure it is required to pass account, conversation thread and call delegates. Also, private peer file and secret, received on previous login procedure, are required.
-    BOOL reloginStarted = [[HOPAccount sharedAccount] reloginWithAccountDelegate:(id<HOPAccountDelegate>) [[OpenPeer sharedOpenPeer] accountDelegate] conversationThreadDelegate:(id<HOPConversationThreadDelegate>)[[OpenPeer sharedOpenPeer] conversationThreadDelegate]  callDelegate:(id<HOPCallDelegate>)[[OpenPeer sharedOpenPeer] callDelegate] lockboxOuterFrameURLUponReload:outerFrameURL reloginInformation:[[OpenPeerUser sharedOpenPeerUser] reloginInfo]];
+    HOPHomeUser* homeUser = [[HOPModelManager sharedModelManager] getLastLoggedInHomeUser];
+    
+    if (homeUser && [homeUser.reloginInfo length] > 0)
+    {
+        //To start relogin procedure it is required to pass account, conversation thread and call delegates. Also, private peer file and secret, received on previous login procedure, are required.
+        reloginStarted = [[HOPAccount sharedAccount] reloginWithAccountDelegate:(id<HOPAccountDelegate>) [[OpenPeer sharedOpenPeer] accountDelegate] conversationThreadDelegate:(id<HOPConversationThreadDelegate>)[[OpenPeer sharedOpenPeer] conversationThreadDelegate]  callDelegate:(id<HOPCallDelegate>)[[OpenPeer sharedOpenPeer] callDelegate] lockboxOuterFrameURLUponReload:outerFrameURL reloginInformation:homeUser.reloginInfo];
+    }
     
     if (!reloginStarted)
         NSLog(@"Relogin failed");
@@ -288,6 +295,32 @@
     
     //Login finished. Remove activity indicator
     [[ActivityIndicatorViewController sharedActivityIndicator] showActivityIndicator:NO withText:nil inView:nil];
+    
+    HOPHomeUser* previousLoggedInHomeUser = [[HOPModelManager sharedModelManager] getLastLoggedInHomeUser];
+    HOPHomeUser* homeUser = [[HOPModelManager sharedModelManager] getHomeUserByStableID:[[HOPAccount sharedAccount] getStableID]];
+    
+    if (homeUser)
+    {
+        if (![homeUser.loggedIn boolValue])
+        {
+            previousLoggedInHomeUser.loggedIn = NO;
+            homeUser.loggedIn = [NSNumber numberWithBool: YES];
+            [[HOPModelManager sharedModelManager] saveContext];
+        }
+    }
+    else
+    {
+        homeUser = (HOPHomeUser*)[[HOPModelManager sharedModelManager] createObjectForEntity:@"HOPModelManager"];
+        homeUser.stableId = [[HOPAccount sharedAccount] getStableID];
+        homeUser.reloginInfo = [[HOPAccount sharedAccount] getReloginInformation];
+        homeUser.loggedIn = [NSNumber numberWithBool: YES];
+        if (previousLoggedInHomeUser)
+            previousLoggedInHomeUser.loggedIn = NO;
+        
+        [[HOPModelManager sharedModelManager] saveContext];
+    }
+    
+    
     
     //Save user data on successful login.
     [[OpenPeerUser sharedOpenPeerUser] saveUserData];

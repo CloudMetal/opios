@@ -42,7 +42,7 @@
  Returns singleton object of this class.
  */
 + (id)sharedStack;
-
+- (id) init __attribute__((unavailable("HOPStack is singleton class.")));
 
 /**
  Initialise delegates objects required for communication between core and client.

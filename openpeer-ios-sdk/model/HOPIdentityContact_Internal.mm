@@ -37,37 +37,32 @@
 
 @implementation HOPIdentityContact
 
+@dynamic expires;
+@dynamic identityProofBundle;
+@dynamic lastUpdated;
+@dynamic priority;
+@dynamic stableID;
+@dynamic weight;
+@dynamic peerFile;
+@dynamic rolodexContact;
+
 - (void) updateWithIdentityContact:(IdentityContact) inIdentityContact
 {
     NSString* sId = [NSString stringWithUTF8String:inIdentityContact.mStableID];
-    NSString* identityURI = [NSString stringWithUTF8String:inIdentityContact.mIdentityURI];
-    HOPIdentityContact* identityContact = [[HOPModelManager sharedModelManager] getIdentityContactByStableID:sId identityURI:identityURI];
     
-    if (!identityContact)
-    {
-        NSManagedObject* managedObject = [[HOPModelManager sharedModelManager] createObjectForEntity:@"HOPIdentityContact"];
-        if (managedObject && [managedObject isKindOfClass:[HOPIdentityContact class]])
-        {
-            identityContact = (HOPIdentityContact*) managedObject;
-        }
-        else
-            return;
-    }
+    self.stableID = sId;
+    self.expires = [OpenPeerUtility convertPosixTimeToDate:inIdentityContact.mExpires];
+    self.lastUpdated = [OpenPeerUtility convertPosixTimeToDate:inIdentityContact.mLastUpdated];
+    self.identityProofBundle = [NSString stringWithCString:core::IHelper::convertToString(inIdentityContact.mIdentityProofBundleEl) encoding:NSUTF8StringEncoding];
+    self.priority = [NSNumber numberWithInt:inIdentityContact.mPriority];
+    self.weight = [NSNumber numberWithInt:inIdentityContact.mWeight];
     
-    identityContact.stableID = sId;
-    identityContact.expires = [OpenPeerUtility convertPosixTimeToDate:inIdentityContact.mExpires];
-    identityContact.lastUpdated = [OpenPeerUtility convertPosixTimeToDate:inIdentityContact.mLastUpdated];
-    identityContact.identityProofBundle = [NSString stringWithCString:core::IHelper::convertToString(inIdentityContact.mIdentityProofBundleEl) encoding:NSUTF8StringEncoding];
-    identityContact.priority = [NSNumber numberWithInt:inIdentityContact.mPriority];
-    identityContact.weight = [NSNumber numberWithInt:inIdentityContact.mWeight];
-    
-    //TODO: check also against homeuserid
     HOPRolodexContact* hopRolodexContact = [[HOPModelManager sharedModelManager] getRolodexContactByIdentityURI:[NSString stringWithCString:inIdentityContact.mIdentityURI encoding:NSUTF8StringEncoding]];
     
-    identityContact.rolodexContact = hopRolodexContact;
+    self.rolodexContact = hopRolodexContact;
     
     NSString* peerURI = [NSString stringWithCString: IHelper::getPeerURI(inIdentityContact.mPeerFilePublic) encoding:NSUTF8StringEncoding];
-    NSString* peerFile = [NSString stringWithCString:IHelper::convertToString(IHelper::convertToElement(inIdentityContact.mPeerFilePublic)) encoding:NSUTF8StringEncoding];
+    //NSString* peerFile = [NSString stringWithCString:IHelper::convertToString(IHelper::convertToElement(inIdentityContact.mPeerFilePublic)) encoding:NSUTF8StringEncoding];
     
     HOPPublicPeerFile* publicPeerFile = [[HOPModelManager sharedModelManager] getPublicPeerFileForPeerURI:peerURI];
     
@@ -81,7 +76,7 @@
         else
             return;
     }
-    identityContact.peerFile = publicPeerFile;
+    self.peerFile = publicPeerFile;
 }
 
 @end

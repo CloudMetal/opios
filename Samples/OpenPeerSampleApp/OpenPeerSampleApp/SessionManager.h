@@ -32,11 +32,10 @@
 #import <Foundation/Foundation.h>
 #import <OpenpeerSDK/HOPProtocols.h>
 
-@class Contact;
 @class Session;
 @class HOPConversationThread;
 @class HOPMessage;
-@class HOPRolodexContact;
+@class HOPContact;
 
 @interface SessionManager : NSObject
 
@@ -46,12 +45,12 @@
 
 + (id) sharedSessionManager;
 
-- (Session*) createSessionForContact:(HOPRolodexContact*) contact;
+- (Session*) createSessionForContact:(HOPContact*) contact;
 - (Session*) createSessionForContacts:(NSArray*) contacts andConversationThread:(HOPConversationThread*) inConversationThread;
 - (Session*) createSessionInitiatedFromSession:(Session*) inSession forContactPeerURIs:(NSString*) peerURIs;
 - (Session*) createRemoteSessionForContacts:(NSArray*) participants;
-- (Session*) proceedWithExistingSessionForContact:(HOPRolodexContact*) contact newConversationThread:(HOPConversationThread*) inConversationThread;
-- (Session*) getSessionForContact:(HOPRolodexContact*) contact;
+- (Session*) proceedWithExistingSessionForContact:(HOPContact*) contact newConversationThread:(HOPConversationThread*) inConversationThread;
+- (Session*) getSessionForContact:(HOPContact*) contact;
 - (Session*) getSessionForSessionId:(NSString*) sessionId;
 
 
@@ -64,7 +63,6 @@
 - (void) onCallOpened:(HOPCall*) call;
 - (void) onCallClosing:(HOPCall*) call;
 
-- (void) onAvailabilityCheckReceivedForSession:(Session*) inSession;
 - (void) redialCallForSession:(Session*) inSession;
 
 - (void) onCallEnded:(HOPCall*) call;

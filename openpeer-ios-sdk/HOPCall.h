@@ -34,6 +34,7 @@
 
 @class HOPConversationThread;
 @class HOPContact;
+@class HOPRolodexContact;
 
 @interface HOPCall : NSObject
 
@@ -46,6 +47,7 @@
  @returns HOPCall object if ICallPtr object is created sucessfully, otherwise nil
  */
 + (id) placeCall:(HOPConversationThread*) conversationThread toContact:(HOPContact*) toContact includeAudio:(BOOL) includeAudio includeVideo:(BOOL) includeVideo;
+- (id) init __attribute__((unavailable("Use static placeCall:toContact:includeAudio:includeVideo method to create a call object.")));
 
 
 /**
@@ -77,8 +79,8 @@
 - (HOPConversationThread*) getConversationThread;
 
 /**
- Retrieves caller contact
- @returns Pointer to the caller contact object
+ Retrieves caller core contact
+ @returns Pointer to the caller core contact object
  */
 - (HOPContact*) getCaller;
 

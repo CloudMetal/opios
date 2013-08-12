@@ -35,7 +35,6 @@
 #import "MessageManager.h"
 #import "Message.h"
 #import "Session.h"
-#import "Contact.h"
 #import "OpenPeerUser.h"
 #import "ChatMessageCell.h"
 
@@ -49,8 +48,7 @@
 @implementation ChatViewController
 
 @synthesize shouldCloseSession = _shouldCloseSession;
-//@synthesize keyboardIsHidden = _keyboardIsHidden;
-//@synthesize arrayMessages = _arrayMessages;
+
 
 #pragma mark init/dealloc
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil

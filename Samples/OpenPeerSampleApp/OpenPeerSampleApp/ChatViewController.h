@@ -57,8 +57,6 @@
 }
 
 @property(nonatomic,assign) Session* session;
-//@property(nonatomic,assign) NSMutableArray *arrayMessages;
-//@property(nonatomic,assign) BOOL keyboardIsHidden;
 @property(nonatomic,assign) BOOL shouldCloseSession;
 
 
@@ -66,8 +64,6 @@
 
 - (void)refreshViewWithData;
 - (void)setFramesSizes;
-- (float)getHeaderHeight:(float)tableViewHeight;
-
 - (float)getHeaderHeight:(float)tableViewHeight;
 
 - (void)setMessage:(Message *)message;
@@ -78,14 +74,12 @@
 
 - (IBAction) closeSession:(id) sender;
 
-//- (void)sendIMmessage:(NSString *)message toRecipient:(id)recipient forMessageEvent:(MessageEvent)messageEvent andImage:(UIImage*)img;
 - (void)sendIMmessage:(NSString *)message;
-//- (void)sendIMmessage:(NSString *)message forMessageEvent:(MessageEvent)messageEvent andImage:(UIImage*)img;
 
--(void)setDefaults;
+- (void)setDefaults;
 
 - (void) setKeyboardIsHidden:(BOOL) hidden;
--(CGSize)calcMessageHeight:(NSString *)message forScreenWidth:(float)width;
+- (CGSize)calcMessageHeight:(NSString *)message forScreenWidth:(float)width;
 
 - (IBAction) sendButtonPressed:(id) sender;
 - (IBAction) actionBack;

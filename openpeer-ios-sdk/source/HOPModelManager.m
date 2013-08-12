@@ -34,6 +34,8 @@
 #import "HOPIdentityContact.h"
 #import "HOPIdentityProvider.h"
 #import "HOPPublicPeerFile.h"
+#import "HOPHomeUser.h"
+#import "OpenPeerConstants.h"
 #import <CoreData/CoreData.h>
 
 @interface HOPModelManager()
@@ -98,8 +100,8 @@
     {
         return _managedObjectModel;
     }
-#warning TODO: Define model url with other constants
-    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"OpenPeer" withExtension:@"momd"];
+
+    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:modelName withExtension:@"momd"];
     _managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
     
     return _managedObjectModel;
@@ -113,11 +115,19 @@
     {
         return _persistentStoreCoordinator;
     }
-
-#warning TODO: Define database url with other constants
-    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"OpenPeer.sqlite"];
+    
+    NSString *libraryPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject];
+    NSString *pathDirectory = [libraryPath stringByAppendingPathComponent:databaseDirectory];
     
     NSError *error = nil;
+    if (![[NSFileManager defaultManager] createDirectoryAtPath:pathDirectory withIntermediateDirectories:YES attributes:nil error:&error])
+    {
+        [NSException raise:@"Failed creating directory" format:@"[%@], %@", pathDirectory, error];
+    }
+    
+    NSString *path = [pathDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"/%@",databaseName]];
+    NSURL *storeURL = [NSURL fileURLWithPath:path];
+    
     _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
     
     if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error])
@@ -154,7 +164,7 @@
 
 #pragma mark - Application's Documents directory
 
-// Returns the URL to the application's Documents directory.
+
 - (NSURL *)applicationDocumentsDirectory
 {
     return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
@@ -169,8 +179,6 @@
     {
         if ([self.managedObjectContext hasChanges] && ![self.managedObjectContext save:&error])
         {
-            // Replace this implementation with code to handle the error appropriately.
-            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
             NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
             abort();
         }
@@ -223,13 +231,20 @@
 {
     HOPRolodexContact* ret = nil;
     
-    NSArray* results = [self getResultsForEntity:@"HOPIdentityProvider" withPredicateString:[NSString stringWithFormat:@"(identityURI MATCHES '%@')", identityURI]];
+    NSArray* results = [self getResultsForEntity:@"HOPRolodexContact" withPredicateString:[NSString stringWithFormat:@"(identityURI MATCHES '%@')", identityURI]];
     
     if([results count] > 0)
     {
         ret = [results objectAtIndex:0];
     }
+    
+    return ret;
+}
 
+- (NSArray *) getRolodexContactsByPeerURI:(NSString*) peerURI
+{
+    NSArray* ret = [self getResultsForEntity:@"HOPRolodexContact" withPredicateString:[NSString stringWithFormat:@"(ANY identityContact.peerFile.peerURI MATCHES '%@')", peerURI]];
+    
     return ret;
 }
 
@@ -253,11 +268,11 @@
     
     if (openPeerContacts)
     {
-        stringFormat = [NSString stringWithFormat:@"(identityContact != nil || identityContact.@count > 0 && homeUserIdentityURI MATCHES '%@')",homeUserIdentityURI];
+        stringFormat = [NSString stringWithFormat:@"(identityContact != nil || identityContact.@count > 0 && identityProvider.homeUserIdentityURI MATCHES '%@')",homeUserIdentityURI];
     }
     else
     {
-        stringFormat = [NSString stringWithFormat:@"(identityContact == nil || identityContact.@count == 0 && homeUserIdentityURI MATCHES '%@')",homeUserIdentityURI];
+        stringFormat = [NSString stringWithFormat:@"(identityContact == nil || identityContact.@count == 0 && identityProvider.homeUserIdentityURI MATCHES '%@')",homeUserIdentityURI];
     }
     
     ret = [self getResultsForEntity:@"HOPRolodexContact" withPredicateString:stringFormat];
@@ -297,7 +312,7 @@
 {
     HOPIdentityProvider* ret = nil;
     
-    NSArray* results = [self getResultsForEntity:@"HOPIdentityProvider" withPredicateString:[NSString stringWithFormat:@"(identityProviderDomain LIKE '%@')", identityProviderDomain]];
+    NSArray* results = [self getResultsForEntity:@"HOPIdentityProvider" withPredicateString:[NSString stringWithFormat:@"(identityProviderDomain MATCHES '%@')", identityProviderDomain]];
     
     if([results count] > 0)
     {
@@ -311,7 +326,7 @@
 {
     HOPIdentityProvider* ret = nil;
     
-    NSArray* results = [self getResultsForEntity:@"HOPIdentityProvider" withPredicateString:[NSString stringWithFormat:@"(identityProviderDomain LIKE '%@' AND name LIKE '%@' AND homeUserIdentityURI LIKE '%@')", identityProviderDomain, identityName, homeUserIdentityURI]];
+    NSArray* results = [self getResultsForEntity:@"HOPIdentityProvider" withPredicateString:[NSString stringWithFormat:@"(identityProviderDomain MATCHES '%@' AND name MATCHES '%@' AND homeUserIdentityURI MATCHES '%@')", identityProviderDomain, identityName, homeUserIdentityURI]];
     
     if([results count] > 0)
     {
@@ -325,7 +340,7 @@
 {
     HOPIdentityProvider* ret = nil;
     
-    NSArray* results = [self getResultsForEntity:@"HOPIdentityProvider" withPredicateString:[NSString stringWithFormat:@"(name LIKE '%@')", name]];
+    NSArray* results = [self getResultsForEntity:@"HOPIdentityProvider" withPredicateString:[NSString stringWithFormat:@"(name MATCHES '%@')", name]];
     
     if([results count] > 0)
     {
@@ -334,4 +349,47 @@
     
     return ret;
 }
+
+- (HOPAvatar*) getAvatarByURL:(NSString*) url
+{
+    HOPAvatar* ret = nil;
+    
+    NSArray* results = [self getResultsForEntity:@"HOPAvatar" withPredicateString:[NSString stringWithFormat:@"(url MATCHES '%@')", url]];
+    
+    if([results count] > 0)
+    {
+        ret = [results objectAtIndex:0];
+    }
+    
+    return ret;
+}
+
+- (HOPHomeUser*) getLastLoggedInHomeUser
+{
+    HOPHomeUser* ret = nil;
+    
+    NSArray* results = [self getResultsForEntity:@"HOPHomeUser" withPredicateString:@"(loggedIn == YES)"];
+    
+    if([results count] > 0)
+    {
+        ret = [results objectAtIndex:0];
+    }
+    
+    return ret;
+}
+
+- (HOPHomeUser*) getHomeUserByStableID:(NSString*) stableID
+{
+    HOPHomeUser* ret = nil;
+    
+    NSArray* results = [self getResultsForEntity:@"HOPHomeUser" withPredicateString:[NSString stringWithFormat:@"(stableId MATCHES '%@')", stableID]];
+    
+    if([results count] > 0)
+    {
+        ret = [results objectAtIndex:0];
+    }
+    
+    return ret;
+}
+
 @end

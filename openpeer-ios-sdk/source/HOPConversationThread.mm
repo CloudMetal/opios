@@ -36,14 +36,14 @@
 
 #import "HOPConversationThread_Internal.h"
 #import "HOPContact_Internal.h"
-#import "OpenPeerUtility.h"
-#import "HOPMessage.h"
-#import "HOPRolodexContact_Internal.h"
-#import "HOPIdentityContact.h"
-#import "HOPIdentityProvider.h"
-#import "HOPPublicPeerFile.h"
 #import "HOPAccount_Internal.h"
+#import "HOPMessage.h"
+
 #import "OpenPeerStorageManager.h"
+#import "OpenPeerUtility.h"
+
+
+
 
 using namespace openpeer;
 using namespace openpeer::core;
@@ -214,18 +214,13 @@ using namespace openpeer::core;
         if ([contacts count] > 0)
         {
             ContactProfileInfoList contactList;
-            for (HOPRolodexContact* contact in contacts)
+            for (HOPContact* contact in contacts)
             {
-                HOPContact* hopContact = [contact getCoreContact];
+                ContactProfileInfo contactInfo;
+                contactInfo.mContact = [contact getContactPtr];
+                contactInfo.mProfileBundleEl = zsLib::XML::ElementPtr();
                 
-                if (hopContact)
-                {
-                    ContactProfileInfo contactInfo;
-                    contactInfo.mContact = [hopContact getContactPtr];
-                    contactInfo.mProfileBundleEl = zsLib::XML::ElementPtr();
-                    
-                    contactList.push_back(contactInfo);
-                }
+                contactList.push_back(contactInfo);
             }
 
             conversationThreadPtr->addContacts(contactList);
@@ -244,11 +239,9 @@ using namespace openpeer::core;
         if ([contacts count] > 0)
         {
             ContactList contactList;
-            for (HOPRolodexContact* contact in contacts)
+            for (HOPContact* contact in contacts)
             {
-                HOPContact* hopContact = [contact getCoreContact];
-                if (hopContact)
-                    contactList.push_back([hopContact getContactPtr]);
+                contactList.push_back([contact getContactPtr]);
             }
             conversationThreadPtr->removeContacts(contactList);
         }
@@ -312,7 +305,7 @@ using namespace openpeer::core;
         [NSException raise:NSInvalidArgumentException format:@"Invalid OpenPeer conversation thread pointer!"];
     }
 
-    return hopMessage;//[hopMessage autorelease];
+    return hopMessage;
 }
 - (BOOL) getMessage: (NSString*) messageID outFrom:(HOPContact**) outFrom outMessageType:(NSString**) outMessageType outMessage:(NSString**) outMessage outTime:(NSDate**) outTime
 {

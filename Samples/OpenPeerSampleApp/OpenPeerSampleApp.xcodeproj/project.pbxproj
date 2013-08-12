@@ -26,7 +26,6 @@
 		87272855166CC2640089CBB6 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87272853166CC2630089CBB6 /* LoginViewController.m */; };
 		87272856166CC2640089CBB6 /* LoginViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 87272854166CC2640089CBB6 /* LoginViewController.xib */; };
 		87272859166CC45B0089CBB6 /* LoginManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 87272858166CC45B0089CBB6 /* LoginManager.m */; };
-		87368AE3167600F200166F35 /* Contact.m in Sources */ = {isa = PBXBuildFile; fileRef = 87368AE2167600F200166F35 /* Contact.m */; };
 		8740266F1670AA52008CC0F1 /* OpenPeerUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 8740266E1670AA52008CC0F1 /* OpenPeerUser.m */; };
 		87421DA3168274BB00699479 /* ActiveSessionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87421DA1168274BB00699479 /* ActiveSessionViewController.m */; };
 		87421DA4168274BB00699479 /* ActiveSessionViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 87421DA2168274BB00699479 /* ActiveSessionViewController.xib */; };
@@ -87,13 +86,6 @@
 			remoteGlobalIDString = 8792E86816519CFF00DEAC58;
 			remoteInfo = OpenpeerSDK;
 		};
-		871BC9A9179EECC400AEA4A6 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 872729CF166CDF530089CBB6 /* openpeer-ios-sdk.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 87B864C91796BBB10027F8B1;
-			remoteInfo = OpenPeerModels;
-		};
 		872DA9E2175CC429000CCA76 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 872729CF166CDF530089CBB6 /* openpeer-ios-sdk.xcodeproj */;
@@ -132,8 +124,6 @@
 		87272857166CC45A0089CBB6 /* LoginManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginManager.h; sourceTree = "<group>"; };
 		87272858166CC45B0089CBB6 /* LoginManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginManager.m; sourceTree = "<group>"; };
 		872729CF166CDF530089CBB6 /* openpeer-ios-sdk.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "openpeer-ios-sdk.xcodeproj"; path = "../../openpeer-ios-sdk.xcodeproj"; sourceTree = "<group>"; };
-		87368AE1167600F200166F35 /* Contact.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Contact.h; sourceTree = "<group>"; };
-		87368AE2167600F200166F35 /* Contact.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Contact.m; sourceTree = "<group>"; };
 		8740266D1670AA52008CC0F1 /* OpenPeerUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenPeerUser.h; sourceTree = "<group>"; };
 		8740266E1670AA52008CC0F1 /* OpenPeerUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OpenPeerUser.m; sourceTree = "<group>"; };
 		87421DA0168274BB00699479 /* ActiveSessionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActiveSessionViewController.h; sourceTree = "<group>"; };
@@ -318,7 +308,6 @@
 			isa = PBXGroup;
 			children = (
 				870E0B70175C93BF00C93CC1 /* libOpenpeerSDK.a */,
-				871BC9AA179EECC400AEA4A6 /* OpenPeerModels.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -406,8 +395,6 @@
 				87F09EE6171EBB2A0045F6A6 /* Message.h */,
 				875CD7E3167A14960037396B /* Session.h */,
 				875CD7E4167A14960037396B /* Session.m */,
-				87368AE1167600F200166F35 /* Contact.h */,
-				87368AE2167600F200166F35 /* Contact.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -565,13 +552,6 @@
 			remoteRef = 870E0B6F175C93BF00C93CC1 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		871BC9AA179EECC400AEA4A6 /* OpenPeerModels.bundle */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = OpenPeerModels.bundle;
-			remoteRef = 871BC9A9179EECC400AEA4A6 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -616,7 +596,6 @@
 				87F24B62167003F400A5389F /* ContactsManager.m in Sources */,
 				87F24B691670048000A5389F /* ContactsTableViewController.m in Sources */,
 				8740266F1670AA52008CC0F1 /* OpenPeerUser.m in Sources */,
-				87368AE3167600F200166F35 /* Contact.m in Sources */,
 				875CD7E2167A14810037396B /* SessionManager.m in Sources */,
 				875CD7E5167A14960037396B /* Session.m in Sources */,
 				874FF90116806D0F00B0A7A0 /* Constants.m in Sources */,
@@ -742,6 +721,7 @@
 				OTHER_LDFLAGS = (
 					"-lstdc++",
 					"-lz",
+					"-ObjC",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -782,6 +762,7 @@
 				OTHER_LDFLAGS = (
 					"-lstdc++",
 					"-lz",
+					"-ObjC",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";

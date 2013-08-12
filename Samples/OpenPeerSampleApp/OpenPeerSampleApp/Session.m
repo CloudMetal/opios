@@ -30,12 +30,11 @@
  */
 
 #import "Session.h"
-#import "Contact.h"
-#import <OpenpeerSDK/HOPRolodexContact.h>
+#import <OpenpeerSDK/HOPContact.h>
 
 @implementation Session
 
-- (id) initWithContact:(HOPRolodexContact*) inContact conversationThread:(HOPConversationThread*) inConverationThread
+- (id) initWithContact:(HOPContact*) inContact conversationThread:(HOPConversationThread*) inConverationThread
 {
     self = [super init];
     if (self)

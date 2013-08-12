@@ -31,7 +31,6 @@
 
 #import "ChatMessageCell.h"
 #import "Message.h"
-#import "Contact.h"
 #import "OpenPeerUser.h"
 #import <OpenpeerSDK/HOPRolodexContact.h>
 

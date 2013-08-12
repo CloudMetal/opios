@@ -32,10 +32,8 @@
 #import "ContactsTableViewController.h"
 #import "ContactsManager.h"
 #import "SessionManager.h"
-#import "Contact.h"
 #import "Constants.h"
-#import <OpenpeerSDK/HOPContact.h>
-#import <OpenpeerSDK/HOPRolodexContact.h>
+#import <OpenpeerSDK/HOPRolodexContact+External.h>
 #import <OpenpeerSDK/HOPModelManager.h>
 #import "OpenPeer.h"
 #import "ActivityIndicatorViewController.h"
@@ -111,17 +109,14 @@
 }
 - (void) onContactsLoaded
 {
-    [self.contactsTableView reloadData];
-    [[ActivityIndicatorViewController sharedActivityIndicator] showActivityIndicator:NO withText:nil inView:nil];
-}
-
-- (void) onCheckingAvailability
-{
-    [[ActivityIndicatorViewController sharedActivityIndicator] showActivityIndicator:YES withText:@"Checking contacts availability ..." inView:self.view];
-}
-
-- (void) onCheckingAvailabilityFinished
-{
+    NSError *error;
+	if (![self.fetchedResultsController performFetch:&error])
+    {
+		// Update to handle the error appropriately.
+		NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+		exit(-1);  // Fail
+	}
+    
     [self.contactsTableView reloadData];
     [[ActivityIndicatorViewController sharedActivityIndicator] showActivityIndicator:NO withText:nil inView:nil];
 }
@@ -149,7 +144,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [[[self.fetchedResultsController sections] objectAtIndex:section] count];
+    return [[[self.fetchedResultsController sections] objectAtIndex:section] numberOfObjects];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -163,7 +158,7 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
     }
     
-    HOPRolodexContact* contact = [[[self.fetchedResultsController sections] objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
+    HOPRolodexContact* contact = [self.fetchedResultsController objectAtIndexPath:indexPath];
     
     [cell.textLabel setText:contact.name];
     
@@ -198,7 +193,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    HOPRolodexContact* contact = [[[self.fetchedResultsController sections] objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
+    HOPRolodexContact* contact = [self.fetchedResultsController objectAtIndexPath:indexPath];
     if (contact)
     {
         //Check if app is in remote session mode
@@ -207,7 +202,7 @@
             [tableView deselectRowAtIndexPath:indexPath animated:NO];
             self.contactsTableView.allowsMultipleSelection = NO;
             //If not, create a session for selecte contact
-            Session* session = [[SessionManager sharedSessionManager] createSessionForContact:contact];
+            Session* session = [[SessionManager sharedSessionManager] createSessionForContact:[contact getCoreContact]];
             
             [[[OpenPeer sharedOpenPeer] mainViewController] showSessionViewControllerForSession:session forIncomingCall:NO forIncomingMessage:NO];
         }
@@ -259,7 +254,7 @@
 
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath NS_AVAILABLE_IOS(3_0)
 {
-    Contact* contact = [[[ContactsManager sharedContactsManager] contactArray] objectAtIndex:indexPath.row];
+    HOPRolodexContact* contact = [self.fetchedResultsController objectAtIndexPath:indexPath];
     if (contact)
     {
         if ([self.listOfSelectedContacts containsObject:contact])

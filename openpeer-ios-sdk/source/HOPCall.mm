@@ -38,10 +38,12 @@
 #import "OpenPeerUtility.h"
 #import "HOPConversationThread_Internal.h"
 #import "HOPContact_Internal.h"
+#import "HOPRolodexContact_Internal.h"
 #import "OpenPeerStorageManager.h"
 
 #import "HOPCall.h"
 #import "HOPContact.h"
+#import "HOPModelManager.h"
 
 using namespace openpeer;
 using namespace openpeer::core;
@@ -135,48 +137,40 @@ using namespace openpeer::core;
 
 - (HOPContact*) getCaller
 {
-    HOPContact* hopContact = nil;
+    HOPContact* ret = nil;
     if(callPtr)
     {
         IContactPtr contactPtr = callPtr->getCaller();
         if (contactPtr)
         {
             NSString* peerURI = [NSString stringWithUTF8String:contactPtr->getPeerURI()];
-            hopContact = [[OpenPeerStorageManager sharedStorageManager] getContactForPeerURI:peerURI];
-            if (!hopContact)
-            {
-                hopContact = [[[HOPContact getForSelf] getPeerURI] isEqualToString:peerURI] ? [HOPContact getForSelf] : nil;
-            }
+            ret = [[OpenPeerStorageManager sharedStorageManager] getContactForPeerURI:peerURI];
         }
     }
     else
     {
         [NSException raise:NSInvalidArgumentException format:@"Invalid OpenPeer call object!"];
     }
-    return hopContact;
+    return ret;
 }
 
 - (HOPContact*) getCallee
 {
-    HOPContact* hopContact = nil;
+    HOPContact* ret = nil;
     if(callPtr)
     {
         IContactPtr contactPtr = callPtr->getCallee();
         if (contactPtr)
         {
             NSString* peerURI = [NSString stringWithUTF8String:contactPtr->getPeerURI()];
-            hopContact = [[OpenPeerStorageManager sharedStorageManager] getContactForPeerURI:peerURI];
-            if (!hopContact)
-            {
-                hopContact = [[[HOPContact getForSelf] getPeerURI] isEqualToString:peerURI] ? [HOPContact getForSelf] : nil;
-            }
+            ret = [[OpenPeerStorageManager sharedStorageManager] getContactForPeerURI:peerURI];
         }
     }
     else
     {
         [NSException raise:NSInvalidArgumentException format:@"Invalid OpenPeer call object!"];
     }
-    return hopContact;
+    return ret;
 }
 
 - (BOOL) hasAudio

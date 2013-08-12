@@ -5,50 +5,53 @@
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="width" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <relationship name="rolodexContacts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="HOPRolodexContact" inverseName="avatars" inverseEntity="HOPRolodexContact" syncable="YES"/>
     </entity>
-    <entity name="HOPHomeUser" syncable="YES">
+    <entity name="HOPHomeUser" representedClassName="HOPHomeUser" syncable="YES">
+        <attribute name="loggedIn" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
         <attribute name="reloginInfo" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="stableId" attributeType="String" syncable="YES"/>
-        <relationship name="identityProvider" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="HOPIdentityProvider" syncable="YES"/>
+        <attribute name="stableId" attributeType="String" indexed="YES" syncable="YES"/>
+        <relationship name="identityProviders" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="HOPIdentityProvider" inverseName="homeUser" inverseEntity="HOPIdentityProvider" syncable="YES"/>
     </entity>
     <entity name="HOPIdentityContact" representedClassName="HOPIdentityContact" syncable="YES">
         <attribute name="expires" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="identityProofBundle" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="lastUpdated" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="priority" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <attribute name="stableID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="stableID" attributeType="String" indexed="YES" syncable="YES"/>
         <attribute name="weight" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <relationship name="peerFile" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="HOPPublicPeerFile" inverseName="identityContact" inverseEntity="HOPPublicPeerFile" syncable="YES"/>
+        <relationship name="peerFile" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="HOPPublicPeerFile" inverseName="identityContacts" inverseEntity="HOPPublicPeerFile" syncable="YES"/>
         <relationship name="rolodexContact" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="HOPRolodexContact" inverseName="identityContact" inverseEntity="HOPRolodexContact" syncable="YES"/>
     </entity>
     <entity name="HOPIdentityProvider" representedClassName="HOPIdentityProvider" syncable="YES">
-        <attribute name="baseIdentityURI" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="homeUserIdentityURI" attributeType="String" syncable="YES"/>
+        <attribute name="baseIdentityURI" optional="YES" attributeType="String" indexed="YES" syncable="YES"/>
+        <attribute name="homeUserIdentityURI" attributeType="String" indexed="YES" syncable="YES"/>
         <attribute name="identityProviderDomain" attributeType="String" syncable="YES"/>
         <attribute name="lastDownloadTime" attributeType="Date" syncable="YES"/>
         <attribute name="name" attributeType="String" syncable="YES"/>
+        <relationship name="homeUser" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="HOPHomeUser" inverseName="identityProviders" inverseEntity="HOPHomeUser" syncable="YES"/>
         <relationship name="rolodexContacts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="HOPRolodexContact" inverseName="identityProvider" inverseEntity="HOPRolodexContact" syncable="YES"/>
     </entity>
     <entity name="HOPPublicPeerFile" representedClassName="HOPPublicPeerFile" syncable="YES">
         <attribute name="peerFile" attributeType="String" syncable="YES"/>
-        <attribute name="peerURI" attributeType="String" syncable="YES"/>
-        <relationship name="identityContact" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="HOPIdentityContact" inverseName="peerFile" inverseEntity="HOPIdentityContact" syncable="YES"/>
+        <attribute name="peerURI" attributeType="String" indexed="YES" syncable="YES"/>
+        <relationship name="identityContacts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="HOPIdentityContact" inverseName="peerFile" inverseEntity="HOPIdentityContact" syncable="YES"/>
     </entity>
     <entity name="HOPRolodexContact" representedClassName="HOPRolodexContact" syncable="YES">
-        <attribute name="identityURI" attributeType="String" syncable="YES"/>
+        <attribute name="identityURI" attributeType="String" indexed="YES" syncable="YES"/>
         <attribute name="name" attributeType="String" syncable="YES"/>
         <attribute name="profileURL" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="vProfileURL" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="avatars" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="HOPAvatar" syncable="YES"/>
+        <relationship name="avatars" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="HOPAvatar" inverseName="rolodexContacts" inverseEntity="HOPAvatar" syncable="YES"/>
         <relationship name="identityContact" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="HOPIdentityContact" inverseName="rolodexContact" inverseEntity="HOPIdentityContact" syncable="YES"/>
         <relationship name="identityProvider" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="HOPIdentityProvider" inverseName="rolodexContacts" inverseEntity="HOPIdentityProvider" syncable="YES"/>
     </entity>
     <elements>
-        <element name="HOPAvatar" positionX="97" positionY="36" width="128" height="103"/>
+        <element name="HOPAvatar" positionX="97" positionY="36" width="128" height="118"/>
+        <element name="HOPHomeUser" positionX="43" positionY="225" width="128" height="103"/>
         <element name="HOPIdentityContact" positionX="-380" positionY="-28" width="128" height="163"/>
+        <element name="HOPIdentityProvider" positionX="-135" positionY="200" width="126" height="148"/>
         <element name="HOPPublicPeerFile" positionX="-387" positionY="225" width="128" height="88"/>
         <element name="HOPRolodexContact" positionX="-155" positionY="-13" width="128" height="148"/>
-        <element name="HOPIdentityProvider" positionX="-135" positionY="200" width="126" height="133"/>
-        <element name="HOPHomeUser" positionX="43" positionY="225" width="128" height="88"/>
     </elements>
 </model>

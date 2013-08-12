@@ -29,23 +29,12 @@
  
  */
 
-#import <Foundation/Foundation.h>
-#import <CoreData/CoreData.h>
+#import "HOPRolodexContact.h"
 
-@class HOPIdentityContact;
+@class HOPContact;
 
-@interface HOPPublicPeerFile : NSManagedObject
+@interface HOPRolodexContact (External)
 
-@property (nonatomic, retain) NSString * peerFile;
-@property (nonatomic, retain) NSString * peerURI;
-@property (nonatomic, retain) NSSet *identityContacts;
-@end
-
-@interface HOPPublicPeerFile (CoreDataGeneratedAccessors)
-
-- (void)addIdentityContactsObject:(HOPIdentityContact *)value;
-- (void)removeIdentityContactsObject:(HOPIdentityContact *)value;
-- (void)addIdentityContacts:(NSSet *)values;
-- (void)removeIdentityContacts:(NSSet *)values;
-
+- (BOOL) isSelf;
+- (HOPContact*) getCoreContact;
 @end

@@ -49,6 +49,7 @@
 @interface HOPAccount : NSObject
 
 + (HOPAccount*) sharedAccount;
+- (id) init __attribute__((unavailable("HOPAccount is singleton class.")));
 
 /**
  Converts account state enum to string
@@ -89,6 +90,14 @@
  @returns Account state enum
  */
 - (HOPAccountState*) getState;
+
+
+/**
+ Retrieves account atable id
+ @returns NSString stable id
+ */
+- (NSString*) getStableID;
+
 
 /**
  Retrieves relogin info for logged user. Relogin info contains": lockboxDomain, accountID, grandID, keyIdentityHalf, keyLockboxHalf.

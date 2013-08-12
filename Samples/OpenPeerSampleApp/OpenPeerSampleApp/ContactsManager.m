@@ -37,16 +37,15 @@
 #import "ContactsTableViewController.h"
 #import "OpenPeer.h"
 #import "OpenPeerUser.h"
-#import "Contact.h"
 #import "Constants.h"
 #import "Utility.h"
 #import "SBJsonParser.h"
 #import <OpenpeerSDK/HOPIdentityLookup.h>
 #import <OpenpeerSDK/HOPIdentityLookupInfo.h>
 #import <OpenpeerSDK/HOPIdentity.h>
-#import <OpenpeerSDK/HOPContact.h>
 #import <OpenpeerSDK/HOPAccount.h>
 #import <OpenpeerSDK/HOPModelManager.h>
+#import <OpenpeerSDK/HOPRolodexContact.h>
 
 @interface ContactsManager ()
 {
@@ -120,44 +119,6 @@
     HOPIdentityLookup* identityLookup = [[HOPIdentityLookup alloc] initWithDelegate:(id<HOPIdentityLookupDelegate>)[[OpenPeer sharedOpenPeer] identityLookupDelegate] identityLookupInfos:contacts identityServiceDomain:identityServiceDomain];
 }
 
-
-
-/**
- For each contact in the list create a session and send system message to check if contact is available for call.
- */
-- (void) checkAvailability
-{
-    for (HOPContact* contact in self.contactArray)
-    {
-        Session* session = [[SessionManager sharedSessionManager] createSessionForContact:contact];
-        [[MessageManager sharedMessageManager] sendSystemMessageToCheckAvailabilityForSession:session];
-    }
-}
-
-/**
- Handles response on availability check system message
- @param contact Contact that responed to system message.
- @param userIds list of contact user ids, that are on call with specified contact
- */
-- (void) onCheckAvailabilityResponseReceivedForContact:(Contact*) contact withListOfPeerURIs:(NSString*) peerURIs
-{
-#warning onCheckAvailabilityResponseReceivedForContact: NOT implemented
-    /*NSArray* listOfPeerURIs = [peerURIs componentsSeparatedByString:@","];
-    if ([listOfPeerURIs count] > 0)
-    {
-        for (NSString* peerURI in listOfPeerURIs)
-        {
-            Contact* contactInSesion = [self getContactForPeerURI:peerURI];
-            if (contactInSesion)
-                [contact.listOfContactsInCallSession addObject:contactInSesion];
-        }
-    }
-    else
-    {
-        [contact.listOfContactsInCallSession removeAllObjects];
-    }
-    [[[[OpenPeer sharedOpenPeer] mainViewController] contactsTableViewController] onContactsLoaded];*/
-}
 /**
  Handles response received from lookup server. 
  */
@@ -171,10 +132,8 @@
         if ([result wasSuccessful])
         {
             NSArray* identityContacts = [identityLookup getUpdatedIdentities];
-            for (HOPIdentityContact* identityContact in identityContacts)
-            {
-                //TODO: Check should contacts details be updated in sdk or from app
-            }
+            
+            refreshContacts = [identityContacts count] > 0 ? YES : NO;
         }
     }
     

@@ -33,6 +33,7 @@
 #import "HOPTypes.h"
 
 @class HOPContact;
+@class HOPRolodexContact;
 @class HOPMessage;
 @class HOPAccount;
 

@@ -87,7 +87,8 @@
                 NSMutableDictionary* errorDetails = [NSMutableDictionary dictionary];
                 [errorDetails setValue:[NSString stringWithUTF8String: errorReason] forKey:NSLocalizedDescriptionKey];
                 // populate the error object with the details
-                *error = [NSError errorWithDomain:@"identityLookup" code:errorCode userInfo:errorDetails];
+                if (error != NULL)
+                    *error = [NSError errorWithDomain:@"identityLookup" code:errorCode userInfo:errorDetails];
             }
         }
     }
